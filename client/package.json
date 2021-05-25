@@ -1,5 +1,7 @@
 {
-  "name": "client",
+  "name": "justclip.me-client",
+  "license": "MIT",
+  "author": "Aakash Varma",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
