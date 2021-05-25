@@ -3,6 +3,8 @@ import {createUseStyles} from 'react-jss';
 import theme from './theme'
 import Swal from 'sweetalert2'
 import config from './config';
+import PulseLoader from "react-spinners/PulseLoader";
+
 // props.match.params.clipid
 
 const useStyles = createUseStyles({
@@ -110,33 +112,36 @@ const useStyles = createUseStyles({
             width:'100vw',
             height:'100vw'
         },
-        content:{
-            // gridTemplateColumns:'1fr'
-        }
       },
 
   })
+
+
 
 export default function Clipboard(props) {
     const classes = useStyles()
     const [isClipped, setIsClipped] = React.useState(false)
     const [clipData, setClipData] = React.useState("")
     const [hasGotData, setHasGotData] = React.useState(false)
+    const [isLoading, setIsLoading] = React.useState(false)
 
     React.useEffect(()=>{
         fetch(config.api_endpoint+'/clip?id='+props.match.params.clipid)
-        .then(response=>response.json())
+        .then(response=>response.json().catch(e=>{
+            console.info("This is a blank Clipboard...");
+        }))
         .then(data=>{
-            if(data.data)
+            if(data && data.data)
             {
                 setClipData(data.data)
                 setHasGotData(true)
             }
         })
-    },[])
+    },[props.match.params.clipid])
 
     function handleClip(){
-        if(clipData!=""){
+        if(clipData!==""){
+            setIsLoading(true);
             fetch(config.api_endpoint+'/clip',{
             method:'POST',
             headers: {
@@ -148,9 +153,12 @@ export default function Clipboard(props) {
             })
         }).then(()=>{
             setIsClipped(true)
+            setIsLoading(false);
+
         })
         .catch(e=>{
             alert("There seems to be some issue at our servers...")
+            setIsLoading(true);
         })
         }
     }
@@ -183,7 +191,13 @@ export default function Clipboard(props) {
                             <div className={classes.actionButtons}>
                                 <span>CLIP : {props.match.params.clipid}</span>
                                 {
-                                    hasGotData?<button onClick={copyClip}>COPY</button>:<button onClick={handleClip}>CLIP IT!</button>
+                                    hasGotData?<React.Fragment>
+                                        <button onClick={copyClip}>COPY</button>
+
+                                    </React.Fragment>:<div style={{display:'flex', alignItems:'center'}}>
+                                    <button onClick={handleClip}>CLIP IT!</button>
+                                    <PulseLoader color={'#fff'} loading={isLoading} css="margin-left:16px" size={15} />
+                                    </div>
                                 }
                             </div>
                         </div>
@@ -191,19 +205,17 @@ export default function Clipboard(props) {
                     <React.Fragment>
                         <div className={classes.clippedView}>
                             <div className={classes.clippedMessageBox}>
-                                <img src={'/assets/clipboard.svg'} style={{width:'100%', maxWidth:'267px'}}/>
+                                <img src={'/assets/clipboard.svg'} style={{width:'100%', maxWidth:'267px'}} alt="ClipBoard Icon"/>
                                 <span>
                                     Your content is now clipped!<br/>
-                                    now open <a href={"/"+props.match.params.clipid} target="_blank">https://justclip.me/{props.match.params.clipid}</a> in the other device/browser.
+                                    now open <a href={"/"+props.match.params.clipid} target="_blank" rel="noreferrer">https://justclip.me/{props.match.params.clipid}</a> in the other device/browser.
                                 </span>
                             </div>
                         </div>
                         
                     </React.Fragment>
                 }
-                    
-            
-            
+
         </div>
     )
 }

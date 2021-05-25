@@ -116,7 +116,7 @@ export default function Home() {
 
     function openClip(e){
         e.preventDefault();
-        if(clipName!="")
+        if(clipName!=="")
             window.location.href=clipName
 
 
@@ -145,7 +145,7 @@ export default function Home() {
                     </div>
                     <div className={classes.right}>
                         <div className={classes.containerBox}>
-                            <img src={'/assets/clipboard.svg'}/>
+                            <img src={'/assets/clipboard.svg'} alt="ClipBoard Icon"/>
                             <form style={{
                                 display:'grid',
                                 gridRowGap:'16px'

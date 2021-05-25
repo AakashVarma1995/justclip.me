@@ -20,7 +20,7 @@ export default function Navbar(props) {
     return (
         <div className={classes.root}>
             <div className={classes.logo}>
-                <img src={'/assets/logo.svg'} style={{height:'32px'}}/>
+                <a href="/"><img src={'/assets/logo.svg'} style={{height:'32px'}} alt="JustClipMe Logo"/></a>
             </div>
         </div>
     )
